@@ -1,0 +1,69 @@
+Gestion des données (Mysql - Mongodb)
+
+test de positionnement
+correction
+test de validation
+correction
+MCD, MLD, Power AMC, Mysql Workbench
+
+les requettes sql (create, alter, drop, contraintes, 
+insert, update, delete, select)
+
+La programmation transactionnelle sous mysql
+Les fonctions
+Les procedures stockées
+Les déclencheurs (Triggers)
+Les transactions
+La gestion des erreurs
+Les curseurs
+La gestion des utilisateurs et attribution des droits
+La sauvegarde et la restauration des données
+
+Mongodb,
+ installation, fonctions insertOne, InserMany,
+ UpdateOne, UpdateMany, deleteOne, DeleteMany, 
+ BulkWrite, Find, aggregate....
+ 
+ 
+Méthode agile
+La gestion projets classique (Waterfall en cascade)
+La gestion de projets agile 
+(adaptée à la gestion des projets informatique)   
+La méthode Scrum
+Ms project
+Jira
+Git , Git hub et git lab
+Docker
+SonarCube
+
+
+Developpement backend Laravel
+
+Installation laravel
+le modèle MVC
+Les migrations
+La factories
+Les seeders
+les layouts et les components 
+les cookies et les variables utilisateurs
+la sécurité (login, register, remember me, forgot password...)
+le mailing (envoi des email transactionnels, envois d'email automatiques, ...)
+gestion des images et des fichiers
+importation exportation excel
+impression en pdf
+dashboard et charts (graphiques)
+
+ 
+
+
+Projet de synthèse
+Stage (Integration en milieu professionnel)
+
+
+
+
+
+
+
+
+
