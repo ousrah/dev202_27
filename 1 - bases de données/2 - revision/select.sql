@@ -113,9 +113,52 @@ having nb_victoires = (
 
 
 
+
+
 #6.	Les parents du cheval qui a remporté le plus grand nombre de compétitions
 
-#7.	Le montant total remporté par Idao de Tillard dans toutes les compétitions qu'il a remporté
 
-#8.	La catégorie que le cheval Idao de Tillardremporte le plus
+use courses202;
+with f as (
+	select id_cheval, count(classement) as nb
+	from participe 
+	where classement = 1 
+	group by id_cheval
+		),
+	g as (select max(nb) as maximum from f),
+champion as (
+select c.id_cheval, nom_cheval, count(classement) as nb
+	from participe p join cheval c using(id_cheval)
+	where classement = 1 
+	group by c.id_cheval, nom_cheval 
+    having nb = (select maximum from g))
+    
+select c.nom_cheval as cheval_champion, ch.nom_cheval as parent
+from champion c 
+join parent p  on p.che_id_cheval = c.id_cheval 
+join cheval ch on p.id_cheval = ch.id_cheval  ;     
+
+
+select * from parent;
+select * from participe where classement = 1;
+-- 7.	Le montant total remporté par tonnerre dans toutes les compétitions qu'il a remporté
+
+select sum(dotation) as somme_gains_Idao
+from participe 
+join saison using(id_saison)
+where classement = 1 and id_cheval in (select id_cheval from cheval where nom_cheval = 'Tonnerre');
+
+select * from cheval;
+
+-- 8.	La catégorie que le cheval Tonnerre remporte le plus
+
+select libelle_categorie, count(*)
+from participe 
+join saison using(id_saison)
+join course using(id_course)
+join categorie using (id_categorie)
+where classement = 1 and id_cheval in (select id_cheval from cheval where nom_cheval = 'Tonnerre')
+group by libelle_categorie
+order by count(*) desc
+limit 1;
 
