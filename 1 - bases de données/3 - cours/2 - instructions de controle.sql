@@ -433,3 +433,78 @@ select nom_du_jour(8);
 # si note entre 18 et <=20 excellent
 # si note non inclus entre 0 et 20 erreur
 
+drop function if exists note;
+delimiter $$
+create function if not exists note(num float)
+	returns varchar(100)
+    deterministic
+begin
+	case 
+		when num<0 then return 'error';
+		when  num < 5 then return 'très faible';
+        when num < 9 then return 'faible';
+        when num < 10 then return 'insuffisant';
+        when num < 12 then return 'passable';
+        when num < 14 then return 'assez bien';
+        when num < 16 then return 'bien';
+        when num < 18 then return 'tres bien';
+        when num <= 20 then return 'excellent';
+        else return 'error';
+	end case;
+end $$
+delimiter ;
+
+
+
+
+drop function if exists note;
+delimiter $$
+create function if not exists note(num float)
+	returns varchar(100)
+    deterministic
+begin
+	
+	return case 
+					when num<0 then  'error'
+					when num < 5 then  'très faible'
+					when num < 9 then  'faible'
+					when num < 10 then  'insuffisant'
+					when num < 12 then  'passable'
+					when num < 14 then  'assez bien'
+					when num < 16 then  'bien'
+					when num < 18 then  'tres bien'
+					when num <= 20 then  'excellent'
+					else  'error'
+				end ;
+
+end $$
+delimiter ;
+select note(20);
+
+# les boucles
+
+
+
+
+drop function if exists somme;
+delimiter $$
+create function if not exists somme(n float)
+	returns bigint
+    deterministic
+begin
+	declare s bigint default 0; #declaration et initialisation
+    declare i int default 1;
+    #set s = 0;
+    #set i = 1;
+	while i<=n do
+		set s = s + i;
+        set i = i + 1;
+    
+    end while;
+	return s;
+end $$
+delimiter ;
+
+select somme(6);
+
+
