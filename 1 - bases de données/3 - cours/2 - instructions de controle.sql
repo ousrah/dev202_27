@@ -203,7 +203,26 @@ si A = 0 et B <> 0 alors x = impossible
 si A <> 0 alors x = -B/A
 
 
-
+drop function if exists resoudre_1er;
+delimiter $$
+create function if not exists resoudre_1er(a float, b float)
+	returns varchar(100)
+    deterministic
+begin
+    if a=0 then 
+		if b=0 then 
+			return ("x = l''ensemble R");
+		else
+			return ("x = impossible");
+		end if;
+	else
+		return (concat("x =",-b/a));
+	end if;
+end$$  
+delimiter ;
+select resoudre_1er(0,0);
+select resoudre_1er(2,5);
+select resoudre_1er(0,5);
 
 
 
@@ -219,19 +238,198 @@ A<>0
     si delta = 0 alors x1=x2= -B/(2*A)
     si delta <0 alors impossible dans R
     
-    
-select pow(5,3);    
-select sqrt(25);
+
+drop function if exists resoudre_2eme;
+delimiter $$
+create function if not exists resoudre_2eme(a float, b float,c float)
+	returns varchar(100)
+    deterministic
+begin
+	declare delta float;
+
+    if a=0 then 
+		if b=0 then 
+			if c=0 then 
+				return ("x = l''ensemble R");
+			else
+				return ("x = impossible");
+			end if;
+		else
+			return (concat("x =",-c/b));
+		end if;
+	else
+        set delta= pow(b,2) - (4*a*c);
+		if delta >0 then
+			return concat("x1=",(-b-sqrt(delta))/(2*a)," x2=",(-b+sqrt(delta))/(2*a));
+		elseif delta=0 then
+			return concat("x1=x2=",-b/(2*a));
+		else
+			return ("x = impossible dans R");
+		end if;
+    end if;
+end$$  
+delimiter ;
+select resoudre_2eme(0,0,0);
+select resoudre_2eme(0,0,1);
+select resoudre_2eme(0,1,2);
+select resoudre_2eme(1,4,4); #delta=0
+select resoudre_2eme(1,6,4); #delta>0
+select resoudre_2eme(1,2,4); #delta<0
+
 
 
 #exercice 3
 #un patron decide de participer aux prix de repas de ces employés
 #il instaure les règles suivantes
-# pour chaque employé on contribu de 20% de son prix de repars
-#si il est marié il aura 25% au lieu de 20%
-# pour chaque enfant il va avoir 10% avec un plafond de 50%
-# si il a un salaire inférieur à 3000 dh il aura un surplus de 10%
+
+
+drop function if exists repas;
+delimiter $$
+create function if not exists repas(prix float, est_marié boolean, nb_enfant int, salaire float)
+	returns varchar(255)
+    deterministic
+begin
+	declare pourcentage int;
+    
+	# pour chaque employé on contribu de 20% de son prix de repars
+    set pourcentage= 20;
+    
+	#si il est marié il aura 25% au lieu de 20%
+    if est_marie then
+		set pourcentage= 25;
+	end if;
+    
+	# pour chaque enfant il va avoir 10%
+    set pourcentage= pourcentage + nb_enfant*10;
+    
+    # avec un plafond de 50%
+    if pourcentage>50 then
+		set pourcentage=50;
+	end if;
+    
+	# si il a un salaire inférieur à 3000 dh il aura un surplus de 10%
+    if salaire<3000 then 
+		set pourcentage= pourcentage + 10;
+	end if;
+	
+    return concat("le montant de la participation du patron est ", round((prix*pourcentage)/100,2)," dh");
+end$$  
+delimiter ;
+
+
+select repas(100,false,0,2000);
+select repas(100,false,0,5000);
+select repas(100,true,0,2000);
+select repas(100,true,2,8000);
+select repas(100,true,2,2000);
+select repas(100,true,12,2000);
+select repas(100,true,12,12000);
+
+
+#exercice : on souhaite developper un fonction qui reçoit 
+#le numero du jour et affiche son nom
+#exemple select nom_jour(1) --->  dimanche
+#exemple select nom_jour(7) --->  samedi
+#exemple select nom_jour(8) --->  erreur
+
+drop function if exists nom_du_jour;
+delimiter $$
+create function if not exists nom_du_jour(numjour int)
+	returns varchar(255)
+    deterministic
+begin
+	declare nomjour varchar(55);
+    set nomjour="erreur";
+		if 	   numjour=1 then 		set nomjour="Dimanche";
+		elseif numjour=2 then	set nomjour="Lundi";
+		elseif numjour=3 then	set nomjour="Mardi";
+		elseif numjour=4 then	set nomjour="Mercredi";
+		elseif numjour=5 then	set nomjour="Jeudi";
+		elseif numjour=6 then	set nomjour="Vendredi";
+		elseif numjour=7 then	set nomjour="Samedi";
+	end if;
+    return nomjour;
+end$$  
+delimiter ;
+
+select nom_du_jour(7);
+select nom_du_jour(1);
+select nom_du_jour(8);
 
 
 
+
+drop function if exists nom_du_jour;
+delimiter $$
+create function if not exists nom_du_jour(numjour int)
+	returns varchar(255)
+    deterministic
+begin
+	declare nomjour varchar(55);
+    
+    case
+		when numjour=1 then set nomjour="Dimanche";
+		when numjour=2 then	set nomjour="Lundi";
+		when numjour=3 then	set nomjour="Mardi";
+		when numjour=4 then	set nomjour="Mercredi";
+		when numjour=5 then	set nomjour="Jeudi";
+		when numjour=6 then	set nomjour="Vendredi";
+		when numjour=7 then	set nomjour="Samedi";
+        else
+			set nomjour="erreur";
+	end case;
+    return nomjour;
+end$$  
+delimiter ;
+
+
+select nom_du_jour(7);
+select nom_du_jour(1);
+select nom_du_jour(8);
+
+
+
+
+
+drop function if exists nom_du_jour;
+delimiter $$
+create function if not exists nom_du_jour(numjour int)
+	returns varchar(255)
+    deterministic
+begin
+	declare nomjour varchar(55);
+    set nomjour= case numjour
+					when 1 then "Dimanche"
+					when 2 then	"Lundi"
+					when 3 then	"Mardi"
+					when 4 then	"Mercredi"
+					when 5 then	"Jeudi"
+					when 6 then	"Vendredi"
+					when 7 then	"Samedi"
+					else		"erreur"
+				end;
+    return nomjour;
+end$$  
+delimiter ;
+
+
+select nom_du_jour(7);
+select nom_du_jour(1);
+select nom_du_jour(8);
+
+
+
+
+# exercice : ecrire une fonction qui récupère une note et qui affiche 
+#sa mention
+# en respectant les valeurs suivantes
+# si note < 5 très faible
+# si note entre 5 et <9 faible
+# si note entre 9 et <10 insuffisant
+# si note entre 10 et <12 passable
+# si note entre 12 et <14 assez bien
+# si note entre 14 et <16 bien
+# si note entre 16 et <18 très bien
+# si note entre 18 et <=20 excellent
+# si note non inclus entre 0 et 20 erreur
 

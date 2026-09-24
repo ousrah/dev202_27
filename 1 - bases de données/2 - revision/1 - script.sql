@@ -164,6 +164,10 @@ INSERT INTO CHAMPS (ID_CHAMPS, NOM_CHAMPS, NB_PLACES) VALUES
 (2, 'Hippodrome de Lyon', 25000),
 (3, 'Hippodrome de Deauville', 30000);
 
+insert into accueil values
+(1,1),(1,2),(2,2),(2,3),(3,1),(3,2),(3,3);
+
+
 -- PROPRIETAIRE (5 propriétaires)
 INSERT INTO PROPRIETAIRE (ID_PROPRIETAIRE, NOM_PROPRIETAIRE, PRENOM_PROPRIETAIRE) VALUES
 (1, 'Dupont', 'Jean'),
