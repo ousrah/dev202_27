@@ -484,7 +484,7 @@ select note(20);
 # les boucles
 
 
-
+#while
 
 drop function if exists somme;
 delimiter $$
@@ -507,4 +507,53 @@ delimiter ;
 
 select somme(6);
 
+
+#repeat
+
+drop function if exists somme;
+delimiter $$
+create function if not exists somme(n float)
+	returns bigint
+    deterministic
+begin
+	declare s bigint default 0; #declaration et initialisation
+    declare i int default 1;
+   
+	repeat 
+		set s = s + i;
+        set i = i + 1;
+    until i>n end repeat;
+	return s;
+end $$
+delimiter ;
+
+select somme(4);
+
+
+
+#loop
+
+drop function if exists somme;
+delimiter $$
+create function if not exists somme(n float)
+	returns bigint
+    deterministic
+begin
+	declare s bigint default 0; #declaration et initialisation
+    declare i int default 1;
+   
+	boucle1:loop 
+		set s = s + i;
+        set i = i + 1;
+        if i>n then
+			leave boucle1;
+        end if;
+    end loop boucle1;
+	return s;
+end $$
+delimiter ;
+
+select somme(6);
+
+# ecrire une fonction qui permet de calculer le factoriel d'un entier
 
