@@ -557,3 +557,19 @@ select somme(6);
 
 # ecrire une fonction qui permet de calculer le factoriel d'un entier
 
+drop function if exists factoriel;
+delimiter $$
+create function if not exists factoriel(n float)
+	returns bigint
+    deterministic
+begin
+	declare f bigint default 1; 
+    declare i int default 1;
+	while i<=n do
+		set f = f*i;
+        set i = i + 1;
+    end while;
+	return f;
+end $$
+delimiter ;
+select factoriel(5);
