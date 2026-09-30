@@ -331,33 +331,182 @@ select ex3_q5(56000);
 #DEPARTEMENT (ID_DEP, NOM_DEP, Ville)
 #EMPLOYE (ID_EMP, NOM_EMP, PRENOM_EMP, DATE_NAIS_EMP, SALAIRE,#ID_DEP)
 
+
+
+
+
+
+drop database if exists employes_202;
+
+create database employes_202 COLLATE "utf8mb4_general_ci";
+use employes_202;
+
+
+create table DEPARTEMENT (
+ID_DEP int auto_increment primary key, 
+NOM_DEP varchar(50), 
+Ville varchar(50));
+
+create table EMPLOYE (
+ID_EMP int auto_increment primary key, 
+NOM_EMP varchar(50), 
+PRENOM_EMP varchar(50), 
+DATE_NAIS_EMP date, 
+SALAIRE float,
+ID_DEP int ,
+constraint fkEmployeDepartement foreign key (ID_DEP) references DEPARTEMENT(ID_DEP));
+
+insert into DEPARTEMENT (nom_dep, ville) values 
+		('FINANCIER','Tanger'),
+		('Informatique','Tétouan'),
+		('Marketing','Martil'),
+		('GRH','Mdiq');
+
+insert into EMPLOYE (NOM_EMP , PRENOM_EMP , DATE_NAIS_EMP , SALAIRE ,ID_DEP ) values 
+('said','said','1990/1/1',8000,1),
+('hassan','hassan','1990/1/1',8500,1),
+('khalid','khalid','1990/1/1',7000,2),
+('souad','souad','1990/1/1',6500,2),
+('Farida','Farida','1990/1/1',5000,3),
+('Amal','Amal','1990/1/1',6000,4),
+('Mohamed','Mohamed','1990/1/1',7000,4);
+
+
+select * from employe;
+
+
+
+
 #1.	Créer une fonction qui retourne le nombre d’employés
 
 
-#2.	Créer une fonction qui retourne la somme des salaires de tous les employés
+drop function if exists ex4_q1;
+delimiter //
+create function ex4_q1()
+returns int
+deterministic
+begin
+	return(select count(*) from employe);
+end//
+delimiter ;
+select ex4_q1();
 
 
-#3.	Créer une fonction pour retourner le salaire minimum de tous les employés
+
+#2.	Créer une fonction qui retourne la somme des salaires de tous les 
+#employés
 
 
-#4.	Créer une fonction pour retourner le salaire maximum de tous les employés
+
+
+drop function if exists ex4_q2;
+delimiter //
+create function ex4_q2()
+returns int
+deterministic
+begin
+	return(select sum(salaire) from employe);
+end//
+delimiter ;
+select ex4_q2();
+
+
+#3.	Créer une fonction pour retourner le salaire minimum de tous les 
+#employés
+drop function if exists ex4_q3;
+delimiter //
+create function ex4_q3()
+returns int
+deterministic
+begin
+	return(select min(salaire) from employe);
+end//
+delimiter ;
+select ex4_q3();
+
+#4.	Créer une fonction pour retourner le salaire maximum de tous les 
+#employés
+
+drop function if exists ex4_q4;
+delimiter //
+create function ex4_q4()
+returns int
+deterministic
+begin
+	return(select max(salaire) from employe);
+end//
+delimiter ;
+select ex4_q4();
 
 
 #5.	En utilisant les fonctions créées précédemment, Créer une requête pour afficher 
 #le nombre des employés, la somme des salaires, le salaire minimum et le salaire maximum
 
+select ex4_q1() as nb,ex4_q2() as somme,ex4_q2() as minimum,ex4_q2() maximum;
 
-#6.	Créer une fonction pour retourner le nombre d’employés d’un département donné.
-
-
-#7.	Créer une fonction la somme des salaires des employés d’un département donné
-
-
-#8.	Créer une fonction pour retourner le salaire minimum des employés d’un département donné
+#6.	Créer une fonction pour retourner le nombre d’employés 
+#d’un département donné.
 
 
-#9.	Créer une fonction pour retourner le salaire maximum des employés d’un département.
 
+drop function if exists ex4_q6;
+delimiter //
+create function ex4_q6(id int)
+returns int
+deterministic
+begin
+	return(select count(*) from employe where id_dep = id);
+end//
+delimiter ;
+select ex4_q6(3);
+
+
+
+
+
+#7.	Créer une fonction la somme des salaires des employés 
+#d’un département donné
+
+
+drop function if exists ex4_q7;
+delimiter //
+create function ex4_q7(id int)
+returns int
+deterministic
+begin
+	return(select sum(salaire) from employe where id_dep = id);
+end//
+delimiter ;
+select ex4_q7(1);
+
+#8.	Créer une fonction pour retourner le salaire minimum 
+#des employés d’un département donné
+
+drop function if exists ex4_q8;
+delimiter //
+create function ex4_q8(id int)
+returns int
+deterministic
+begin
+	return(select min(salaire) from employe where id_dep = id);
+end//
+delimiter ;
+select ex4_q8(1);
+
+#9.	Créer une fonction pour retourner le salaire maximum 
+#des employés d’un département.
+
+
+drop function if exists ex4_q9;
+delimiter //
+create function ex4_q9(id int)
+returns int
+deterministic
+begin
+	return(select max(salaire) from employe where id_dep = id);
+end//
+delimiter ;
+select ex4_q9(1);
 
 #10.	En utilisant les fonctions créées précédemment, Créer une requête pour afficher 
 #pour les éléments suivants : 
@@ -366,8 +515,28 @@ select ex3_q5(56000);
 #c.	Le salaire minimum
 #d.	Le salaire maximum
 
+select upper(nom_dep),
+ ex4_q7(id_dep),
+ ex4_q8(id_dep),
+ ex4_q9(id_dep) from departement;
+
+
+
+
 
 #11.	Créer une fonction qui accepte comme paramètres 2 chaines de caractères 
 #et elle retourne les deux chaines en majuscules concaténé avec un espace entre eux.
 
+drop function if exists ex4_q11;
+delimiter //
+create function if not exists ex4_q11(ch1 varchar(50),ch2 varchar(50))
+	returns varchar(100)
+    deterministic
+begin
+	return upper(concat(ch1,' ',ch2));
+end//
+delimiter ;
 
+
+
+select ex4_q11 ('hello','everybody');
