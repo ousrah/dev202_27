@@ -350,16 +350,89 @@ INSERT INTO Composition_Recette (NumRec, NumIng, QteUtilisee) VALUES
 #PS1 : Qui affiche la liste des ingrédients avec pour chaque ingrédient 
 #le numéro, le nom et la raison sociale du fournisseur.
 
+drop procedure if exists ps1;
+delimiter &&
+create procedure ps1( )
+begin
+	select    noming, numing,rsfou
+	from ingredients join fournisseur using(numfou);
+end &&
+delimiter ;
+
+
+call ps1();
+
+
+
+
 
 #PS2 : Qui affiche pour chaque recette le nombre d'ingrédients et le montant 
 #cette recette
 
 
+
+drop procedure if exists ps2;
+delimiter &&
+create procedure ps2( )
+begin
+	select nomrec, count(numing)  as nb, format(sum(puing*qteutilisee),2) as montant
+	from recettes join composition_recette cr using (numrec)
+			join ingredients i using(numing)
+            group by nomrec;
+end &&
+delimiter ;
+
+call ps2();
+
+
+
+
+
 #PS3 : Qui affiche la liste des recettes qui se composent de plus de 
-#10 ingrédients avec pour chaque recette le numéro et le nom
+#3 ingrédients avec pour chaque recette le numéro et le nom
+
+
+
+drop procedure if exists ps3;
+delimiter &&
+create procedure ps3( )
+begin
+	select numrec,nomrec
+	from recettes join composition_recette cr using (numrec)
+			join ingredients i using(numing)
+            group by nomrec, numrec
+            having count(numing) > 3;
+end &&
+delimiter ;
+
+call ps3();
+
+
+
+
+
+
+
+
+
 
 
 #PS4 : Qui reçoit un numéro de recette et qui retourne son nom
+
+
+drop procedure if exists ps4;
+delimiter &&
+create procedure ps4(in num int,out r varchar(50))
+begin
+	select nomrec into r from recettes where numrec = num;
+end &&
+delimiter ;
+
+call ps4(1,@r);
+select @r;
+
+
+
 
 
 #PS5 : Qui reçoit un numéro de recette. Si cette recette a au moins un 
@@ -367,15 +440,62 @@ INSERT INTO Composition_Recette (NumRec, NumIng, QteUtilisee) VALUES
 #le montant le plus bas) sinon elle ne retourne "Aucun ingrédient associé"
 
 
+
+
+insert into recettes values (null,'test','test',0);
+select * from recettes where numrec not in( select numrec from  composition_recette);
+
+drop procedure if exists ps5;
+delimiter &&
+create procedure ps5(num int, out message varchar(50))
+begin
+# if (select count(*) from composition_recette where numrec = num) >= 1 then
+if exists (select * from composition_recette where numrec = num) then
+	select noming into message 
+    from composition_recette   join ingredients using(numing)
+    where numrec = num
+    order by puing*qteutilisee asc
+    limit 1;
+else 
+	set message =  "Aucun ingrédient associé";
+end if;
+end &&
+delimiter ;
+call ps5(11,@m);
+select @m;
 #PS6 : Qui reçoit un numéro de recette et qui affiche la liste des ingrédients 
 #correspondant à cette recette avec pour chaque ingrédient le nom,
 #la quantité utilisée et le montant
 
-
+drop procedure if exists ps6;
+delimiter &&
+create procedure ps6(num int)
+begin
+	select noming , qteutilisee , format(qteutilisee*puing,2)  as montant
+	from ingredients  join composition_recette  using(numing)
+	where numrec=num;
+end &&
+delimiter ;
+call ps6(1);
 #PS7 : Qui reçoit un numéro de recette et qui affiche :
 #Son nom (Procédure PS_4)
 #La liste des ingrédients (procédure PS_6)
 #Son meilleur ingrédient (PS_5)
+
+
+
+drop procedure if exists ps7;
+delimiter &&
+create procedure ps7(num int)
+begin
+	call ps4(num,@n);
+    select  @n;
+    call ps6(num);
+    call ps5(num,@m);
+    select @m;
+end &&
+delimiter ;
+call ps7(1);
 
 
 #PS8 : Qui reçoit un numéro de fournisseur vérifie si ce fournisseur existe. 
@@ -385,6 +505,25 @@ INSERT INTO Composition_Recette (NumRec, NumIng, QteUtilisee) VALUES
 #afficher un message 'Ce fournisseur n'a aucun ingrédient associé. 
 #Il sera supprimé' et supprimer ce fournisseur
 
+
+select * from fournisseur;
+insert into fournisseur values (null,'test','test');
+drop procedure if exists ps8;
+delimiter &&
+create procedure ps8(num int)
+begin
+	if not exists(select * from fournisseur where numfou=num) then
+		select ('Aucun fournisseur ne porte ce numéro');
+	else
+		if not exists(select * from ingredients where numfou=num) then
+			select('Ce fournisseur n''a aucun ingrédient associé, il sera supprimé');
+            delete from fournisseur where numfou=num;
+		else
+			select numing,noming from ingredients where numfou=num;
+		end if;
+	end if;
+end &&
+delimiter ;
 
 
 #PS9 : Qui affiche pour chaque recette :
