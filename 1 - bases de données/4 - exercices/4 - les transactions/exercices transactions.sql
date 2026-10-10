@@ -5,20 +5,27 @@
 -- Soit une base de données MySQL  contenant les tables suivantes :
 
 -- Salle (NumSalle, Etage, NombreChaises)
--- Transfert (NumSalleOrigine#, NumSalleDestination#, DateTransfert, NbChaisesTransférées,)
+-- Transfert (#NumSalleOrigine, #NumSalleDestination, DateTransfert, NbChaisesTransférées)
 
 -- 1.	Créer les tables de cette base de données
 -- 2.	Le nombre de chaises dans une salle doit être compris entre 20 et 30 chaises par salle, Implémenter cette règle
 
 
-drop database if exists salles_201;
-create database salles_201 collate utf8mb4_general_ci;
-use salles_201;
+drop database if exists salles_202;
+create database salles_202 collate utf8mb4_general_ci;
+use salles_202;
 
-create table Salle (NumSalle int auto_increment primary key, Etage int, NombreChaises int, 
+create table Salle (
+NumSalle int auto_increment primary key, 
+Etage int, 
+NombreChaises int, 
 constraint chk_NombreChaises check (NombreChaises between 20 and 30));
 
-create table Transfert (NumSalleOrigine int, NumSalleDestination int, DateTransfert date, NbChaisesTransferees  int,
+create table Transfert (
+NumSalleOrigine int, 
+NumSalleDestination int, 
+DateTransfert datetime, 
+NbChaisesTransferees  int,
 constraint fk_NumSalleOrigine foreign key (NumSalleOrigine) references salle(numsalle),
 constraint fk_NumSalleDestination foreign key (NumSalleDestination) references salle(numsalle)
 );
@@ -60,46 +67,36 @@ select * from salle;
 -- ii.	afficher le message d’erreur « Impossible d’effectuer le transfert des chaises »
 -- d.	Exécuter le code puis consulter les tables salle et transfert, le transfert doit être effectué parce que la contrainte CHECK est vérifiée pour les deux salles
 -- e.	En essayant de ré-exécuter le code une deuxième fois, le message d’erreur sera affiché
+alter table transfert modify datetransfert datetime default current_timestamp;
 
-
-
-drop procedure if exists transfert ;
+drop procedure if exists ex1;
 delimiter $$
-create procedure transfert(SalleOrigine int, SalleDest int,NbChaises int )
+create procedure if not exists ex1(salo int,sald int,nbc int)
 begin
-	declare dateTransfert date default curdate();
+	declare datet date default curdate();
     declare exit handler for sqlexception
-		begin
-			rollback;
-            select "Impossible d’effectuer le transfert des chaises " as message;
-		end;
-
-	
-	
-	start transaction;
-	update salle 
-    set nombreChaises = nombreChaises-NbChaises
-    where NumSalle=SalleOrigine;
+    begin
+		rollback;
+		select "le transfert des chaises ne peut pas se faire";
+    end;
     
-    update salle 
-    set nombreChaises = nombreChaises+NbChaises
-    where NumSalle=SalleDest;
+    start transaction;
+		update salle 
+		set  NombreChaises=NombreChaises-nbc
+		where NumSalle=salo;
+		
+		update salle 
+		set  NombreChaises=NombreChaises+nbc
+		where NumSalle=sald;
+		
+		insert into Transfert value(salo,sald,datet,nbc);
+    commit;
     
-    insert into transfert values(
-		SalleOrigine,
-        SalleDest,
-        dateTransfert,
-        NbChaises
-    );
     
-	commit;
-
-
-end $$
+end$$
 delimiter ;
 
-call transfert(2,3,4);
-select * from transfert ;
-select * from salle ;
+select * from salle;
 
+call ex1(4,1,2);
 
