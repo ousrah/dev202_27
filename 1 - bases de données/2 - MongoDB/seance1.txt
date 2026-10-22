@@ -1,0 +1,27 @@
+installation de MongoDB service, MongoDB compass, mongosh, Tools (mongodump….)
+
+tester l'installation
+
+sur le mongosh ou mongodbcompass shell
+tester les instructions suivantes:
+ 
+use myDataBase
+db
+show dbs
+show collections
+db.myCollection.find()
+db.myCollection.insertOne
+insertMany
+updateOne
+updateMany
+deleteOne
+deleteMany
+BulkWrite
+
+faire les exercices
+les paramètres de find
+
+
+
+
+
